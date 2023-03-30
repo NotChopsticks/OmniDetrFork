@@ -176,6 +176,11 @@ GPUS_PER_NODE=8 ./tools/run_dist_launch.sh 8 ./configs/r50_ut_detr_omni_bees.sh
 GPUS_PER_NODE=8 ./tools/run_dist_launch.sh 8 ./configs/r50_ut_detr_omni_crowdhuman.sh
 ```
 
+### DVD Specific parameters parsed 
+
+
+
+
 #### Training from Deformable DETR
 Because our burn-in stage is totally same as Deformable DETR, it is acceptable to start from a Deformable DETR checkpoint to skip the burn-in stage. Just modify the ``resume`` argument in config file above.
 
