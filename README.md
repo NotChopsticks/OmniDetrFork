@@ -71,7 +71,7 @@ code_root/
       
 ```
 
-### Dataset preparation
+### Dataset preparation. [NOTE]: This is done for our dataset DVD. 
 First go to ``scripts`` folder
 
 ```
@@ -110,7 +110,6 @@ To get the split labeled and omni-labeled datasets
 ```
 python split_dataset_voc_omni.py
 ```
-
 
 #### Objects365
 First sample a subset from the original whole training set
@@ -167,18 +166,42 @@ Because semi-supervised learning is just a special case of omni-supervised learn
 Training Omni-DETR on each dataset (from the repo main folder)
 
 #### Training from scratch
-
 ```
 GPUS_PER_NODE=8 ./tools/run_dist_launch.sh 8 ./configs/r50_ut_detr_omni_coco.sh
 GPUS_PER_NODE=8 ./tools/run_dist_launch.sh 8 ./configs/r50_ut_detr_omni_voc.sh
-GPUS_PER_NODE=8 ./tools/run_dist_launch.sh 8 ./configs/r50_ut_detr_omni_objects.sh
-GPUS_PER_NODE=8 ./tools/run_dist_launch.sh 8 ./configs/r50_ut_detr_omni_bees.sh
-GPUS_PER_NODE=8 ./tools/run_dist_launch.sh 8 ./configs/r50_ut_detr_omni_crowdhuman.sh
 ```
 
-### DVD Specific parameters parsed 
+### DVD Specific parameters parsed - config file
+Below here is provided an example of the config file used. They are called as described above. The rest of the hyperparameters is kept as default, see parser main.py. 
 
+```
+#!/usr/bin/env bash
 
+set -x
+
+EXP_DIR=results/sdugamod/ground/
+PY_ARGS=${@:1}
+
+python -u main.py \
+    --output_dir ${EXP_DIR} \
+    ${PY_ARGS} \
+    --BURN_IN_STEP 20 \
+    --TEACHER_UPDATE_ITER 1 \
+    --EMA_KEEP_RATE 0.9996 \
+    --annotation_json_label 'ground_train_aligned_ids_w_indicator.json' \
+    --annotation_json_unlabel 'Ground_8605_scaled_labels_ids_w_indicator.json' \
+    --CONFIDENCE_THRESHOLD 0.7 \
+    --data_path '../../SDU-GAMODv3' \
+    --lr 2e-4 \
+    --epochs 58 \
+    --lr_drop 150 \
+    --pixels 600 \
+    --num_queries 900 \
+    --nheads 16 \
+    --num_feature_levels 4 \
+    --save_freq 4 \
+    --dataset_file 'sdugamod_ground' \
+```
 
 
 #### Training from Deformable DETR
@@ -197,10 +220,6 @@ GPUS_PER_NODE=8 ./tools/run_dist_launch.sh 8 ./configs/r50_ut_detr_tagsU_ufo.sh
 GPUS_PER_NODE=8 ./tools/run_dist_launch.sh 8 ./configs/r50_ut_detr_point_ufo.sh
 ```
 
-### Training under the setting of VOC07to12
-```
-GPUS_PER_NODE=8 ./tools/run_dist_launch.sh 8 ./configs/r50_ut_detr_voc07to12_semi.sh
-```
 
 ### Note
 1. Some of our experiments are on 800-pixels images by 8 * GPUs with 32G memory. If such memory is not affordable, please change the argument of ``pixels`` to 600. Then it can work on 8 * GPUs with 16G memory. 
